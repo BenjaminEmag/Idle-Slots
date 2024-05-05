@@ -1,4 +1,7 @@
 #pragma once
+class GraphicsObjectManager;
+class SlotMachine;
+
 class Game 
 {
 private:
@@ -6,6 +9,17 @@ private:
 	Game() {};
 	~Game();
 
+	GraphicsObjectManager* mpGraphicsObjectManager = nullptr;
+
+	SlotMachine* mSlotMachine = nullptr;
+
+	void pollInputs();
+	void update();
+	void draw();
+	void createSlotMachine();
+
+	int mWidth = 0.0;
+	int mheight = 0.0;
 public:
 	static void createInstance();
 	static void destroyInstance();
