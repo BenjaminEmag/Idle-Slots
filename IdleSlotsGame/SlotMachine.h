@@ -1,34 +1,36 @@
 #include <vector>
-#include "Reel.h"
 #include <raylib.h>
 #include <string>
-#include "GraphicsObjectManager.h"
-
+#include "SlotMachineState.h";
 class GraphicsObjectManager;
 class GraphicsObject;
+class Reel;
 
 class SlotMachine
 {
 public:
-    enum State
-    {
-        START,
-        SPIN,
-        STOP
-    };
+	SlotMachine(Vector2 position, int numReels, int lenght, GraphicsObjectManager* graphicsObjManager, const std::string key, Vector2 machinDim, Vector2 spriteDim, int spriteCount);
+	void start();
+	void spin();
+	void stopSpin();
+	void draw();
+	void update();
+	void setState(SlotMachineState state) { mState = state; };
 
-    SlotMachine(Vector2 position, int numReels, int lenght, GraphicsObjectManager* graphicsObjManager, const std::string key, Vector2 machinDim, Vector2 spriteDim, int spriteCount);
-    void start();
-    void spin();
-    void stop();
-    void draw();
-    void update();
-    void setState(State state) { mState = state; };
+	void calculateSpinResult();
 private:
-    Rectangle mRectangle; // Defines size of slot machine 
-    Vector2 mPos;
-    std::vector<Reel> mReels;
-    State mState = START;
-    GraphicsObjectManager* mGrapicObjManagers;
-    int mNumReels;
+	Rectangle mRectangle; // Defines size of slot machine 
+	Vector2 mPos;
+	std::vector<Reel> mReels;
+	SlotMachineState mState = SlotMachineState::START;
+	GraphicsObjectManager* mpGrapicObjManagers = nullptr;
+
+	int mNumReels;
+	int mLenght;
+	std::vector<Rectangle> mSlotSpriteRects; // defines the sprites 
+
+	float mSpinSpeed = 50.0f;
+	float mTotalSpinLenght = 1.5f;
+
+
 };

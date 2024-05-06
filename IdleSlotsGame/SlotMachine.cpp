@@ -1,13 +1,13 @@
 #include "SlotMachine.h"
-#include "GraphicsObject.h"
 #include "Reel.h"
 #include "Sprite.h"
 #include <raylib.h>
 #include "GraphicsObjectManager.h"
 #include <string>
+#include <random>
 
 SlotMachine::SlotMachine(Vector2 position, int numReels, int lenght, GraphicsObjectManager* graphicsObjManager, const std::string key, Vector2 machinDim, Vector2 spriteDim, int spriteCount)
-	: mGrapicObjManagers(graphicsObjManager), mPos(position), mNumReels(numReels)
+	: mpGrapicObjManagers(graphicsObjManager), mPos(position), mNumReels(numReels), mLenght(lenght)
 {
 	mRectangle = { position.x,position.y, machinDim.x, machinDim.y };
 	Vector2 reelPositon = position;
@@ -20,6 +20,7 @@ SlotMachine::SlotMachine(Vector2 position, int numReels, int lenght, GraphicsObj
 		pos.y = spriteDim.y;
 
 		Sprite sprite(graphicsObjManager->getObject(key), pos, spriteDim.x, spriteDim.y);
+		mSlotSpriteRects.push_back(sprite.getRectangle());
 		sprites.push_back(sprite);
 	}
 
@@ -48,15 +49,24 @@ void SlotMachine::start()
 
 void SlotMachine::spin()
 {
+	float totalTime = mTotalSpinLenght;
+	float timeInterval = totalTime / mNumReels;
+	float spinTime = timeInterval;
 	for (int i = 0; i < mNumReels; i++)
 	{
-		mReels[i].spin();
+		mReels[i].startSpin(spinTime, mSpinSpeed);
+		spinTime += timeInterval;
 	}
+
+	calculateSpinResult();
 }
 
-void SlotMachine::stop()
+void SlotMachine::stopSpin()
 {
-
+	for (int i = 0; i < mNumReels; i++)
+	{
+		mReels[i].stop();
+	}
 }
 
 void SlotMachine::draw()
@@ -69,21 +79,31 @@ void SlotMachine::draw()
 
 void SlotMachine::update()
 {
-	switch (mState)
-	{
-	case SlotMachine::START:
-		break;
-	case SlotMachine::SPIN:
-		spin();
-		break;
-	case SlotMachine::STOP:
-		break;
-	default:
-		break;
-	}
-
 	for (int i = 0; i < mNumReels; i++)
 	{
 		mReels[i].update();
+	}
+}
+
+void SlotMachine::calculateSpinResult()
+{
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> dis(0, mSlotSpriteRects.size() - 1);
+	
+	Rectangle* recs = new Rectangle[mLenght];
+
+	bool shouldRepeatTiles = false;
+
+	for (int i = 0; i < mNumReels; i++)
+	{
+		for (int j = 0; j < mLenght; j++)
+		{
+			int spriteIndex = dis(gen);
+
+			recs[j] = mSlotSpriteRects.at(spriteIndex);
+		}
+
+		mReels[i].setVisibleSymbols(recs);
 	}
 }

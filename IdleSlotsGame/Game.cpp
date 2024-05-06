@@ -1,10 +1,9 @@
 #include "Game.h"
 #include "raylib.h"
 #include <cassert>
-
 #include "GraphicsObjectManager.h"
-
 #include "SlotMachine.h"
+#include "SlotMachineState.h"
 
 Game* Game::mpsInstance = nullptr;
 
@@ -79,7 +78,7 @@ void Game::init(int width, int height, int fps)
 
 void Game::createSlotMachine()
 {
-	Vector2 pos{ GetScreenWidth() * 0.4 , GetScreenHeight() * 0.4 };
+	Vector2 pos{ GetScreenWidth() * 0.4f , GetScreenHeight() * 0.4f };
 
 	const std::string KEY = "slotmachine";
 	const std::string ASSETS_FOLDER = R"(..\Assets\)";
@@ -102,18 +101,24 @@ void Game::createSlotMachine()
 void Game::pollInputs()
 {
 	if (IsKeyPressed(KEY_SPACE))
-		mSlotMachine->setState(SlotMachine::SPIN);
+		mSlotMachine->spin();
 }
 
 void Game::update()
 {
-	mSlotMachine->update();
+	mUpdateTimer.update();
+
+	if (mUpdateTimer.isTimerDone()) 
+	{
+		mSlotMachine->update();
+		mUpdateTimer.startTimer(mUpdateInterval);
+	}
 }
 
 void Game::draw()
 {
 	// Debug Box
-	Vector2 pos{ GetScreenWidth() * 0.4 , GetScreenHeight() * 0.4 };
+	Vector2 pos{ GetScreenWidth() * 0.4f , GetScreenHeight() * 0.4f };
 	int numReels = 3;
 	int lenght = 3;
 	int spriteCount = 4;

@@ -1,4 +1,6 @@
 #pragma once
+#include "Timer.h"
+
 class GraphicsObjectManager;
 class SlotMachine;
 
@@ -20,6 +22,9 @@ private:
 
 	int mWidth = 0.0;
 	int mheight = 0.0;
+
+	Timer mUpdateTimer;
+	const float mUpdateInterval = 1.0 / 60.0f;
 public:
 	static void createInstance();
 	static void destroyInstance();
