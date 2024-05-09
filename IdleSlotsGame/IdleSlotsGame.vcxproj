@@ -133,7 +133,9 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GraphicsObject.cpp" />
     <ClCompile Include="GraphicsObjectManager.cpp" />
+    <ClCompile Include="HUD.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Money.cpp" />
     <ClCompile Include="Reel.cpp" />
     <ClCompile Include="SlotMachine.cpp" />
     <ClCompile Include="SlotSymbol.cpp" />
@@ -147,6 +149,8 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GraphicsObject.h" />
     <ClInclude Include="GraphicsObjectManager.h" />
+    <ClInclude Include="HUD.h" />
+    <ClInclude Include="Money.h" />
     <ClInclude Include="Reel.h" />
     <ClInclude Include="SlotMachine.h" />
     <ClInclude Include="SlotMachineState.h" />

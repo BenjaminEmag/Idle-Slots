@@ -5,12 +5,13 @@
 #include "GraphicsObjectManager.h"
 #include <string>
 #include <random>
+#include <iostream>
 
-SlotMachine::SlotMachine(Vector2 position, int numReels, int lenght, GraphicsObjectManager* graphicsObjManager, const std::string key, Vector2 machinDim, Vector2 spriteDim, int spriteCount)
-	: mpGrapicObjManagers(graphicsObjManager), mPos(position), mNumReels(numReels), mLenght(lenght)
+SlotMachine::SlotMachine(Vector2 position, int numReels, int length, GraphicsObjectManager* graphicsObjManager, const std::string key, Vector2 machinDim, Vector2 spriteDim, int spriteCount)
+	: mpGrapicObjManagers(graphicsObjManager), mPos(position), mNumReels(numReels), mLenght(length)
 {
 	mRectangle = { position.x,position.y, machinDim.x, machinDim.y };
-	Vector2 reelPositon = position;
+	Vector2 reelPosition = position;
 	std::vector<Sprite> sprites;
 
 	for (int i = 0; i < spriteCount; i++)
@@ -26,12 +27,13 @@ SlotMachine::SlotMachine(Vector2 position, int numReels, int lenght, GraphicsObj
 
 	for (int i = 0; i < numReels; i++)
 	{
-		Reel reel(reelPositon, sprites, lenght, spriteCount * 2, mRectangle);
+		Reel reel(reelPosition, sprites, length, spriteCount * 2, mRectangle);
 		mReels.push_back(reel);
 
-		reelPositon.x = reelPositon.x + machinDim.x / numReels;
+		reelPosition.x = reelPosition.x + machinDim.x / numReels;
 	}
 
+	insertLineFromRow(1);
 	start();
 }
 
@@ -71,10 +73,20 @@ void SlotMachine::stopSpin()
 
 void SlotMachine::draw()
 {
+	float offest = 20.0;
+	Rectangle drawBox{ mRectangle.x - offest, mRectangle.y - offest, mRectangle.width + offest * 2.0, mRectangle.height + offest * 2.0 };
+	DrawRectangleLinesEx(drawBox, 12.0, BLUE);
+
+	BeginScissorMode(mPos.x, mPos.y, mRectangle.width, mRectangle.height);
 	for (int i = 0; i < mNumReels; i++)
 	{
 		mReels[i].draw();
 	}
+	EndScissorMode();
+
+
+	if (mShowLines)
+		DrawLineEx(mLines.at(1).first, mLines.at(1).second, 15.0, RED);
 }
 
 void SlotMachine::update()
@@ -90,14 +102,12 @@ void SlotMachine::calculateSpinResult()
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> dis(0, mSlotSpriteRects.size() - 1);
-	
-	Rectangle* recs = new Rectangle[mLenght];
 
-	bool shouldRepeatTiles = false;
+	Rectangle* recs = new Rectangle[mSlotSpriteRects.size() * 2.0];
 
 	for (int i = 0; i < mNumReels; i++)
 	{
-		for (int j = 0; j < mLenght; j++)
+		for (int j = 0; j < mSlotSpriteRects.size() * 2.0; j++)
 		{
 			int spriteIndex = dis(gen);
 
@@ -106,4 +116,25 @@ void SlotMachine::calculateSpinResult()
 
 		mReels[i].setVisibleSymbols(recs);
 	}
+	delete[] recs;
+}
+
+void SlotMachine::showLines()
+{
+	mShowLines = !mShowLines;
+}
+
+void SlotMachine::insertLineFromRow(int row)
+{
+	Rectangle middleRow = getRectFromRow(row);
+	Vector2 startPoint{ middleRow.x, middleRow.y - middleRow.height / 2.0f };
+	Vector2 endPoint{ middleRow.x + middleRow.width , middleRow.y - middleRow.height / 2.0f };
+
+	mLines.insert({ 1 ,std::make_pair(startPoint,endPoint) });
+}
+
+Rectangle SlotMachine::getRectFromRow(int row)
+{
+	row++;
+	return Rectangle{ mRectangle.x , mRectangle.y + row * mSlotSpriteRects[0].height ,mSlotSpriteRects[0].width * mNumReels, mSlotSpriteRects[0].height };
 }

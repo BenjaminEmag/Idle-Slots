@@ -3,7 +3,10 @@
 #include <cassert>
 #include "GraphicsObjectManager.h"
 #include "SlotMachine.h"
+#include "HUD.h"
+#include "Money.h"
 #include "SlotMachineState.h"
+#include <iostream>
 
 Game* Game::mpsInstance = nullptr;
 
@@ -46,13 +49,7 @@ void Game::startLoop()
 	{
 		pollInputs();
 		update();
-		BeginDrawing();
-		DrawFPS(10, 0);
-
 		draw();
-		ClearBackground(RAYWHITE);
-
-		EndDrawing();
 	}
 }
 
@@ -64,7 +61,7 @@ void Game::init(int width, int height, int fps)
 	mpGraphicsObjectManager = new GraphicsObjectManager();
 	mpGraphicsObjectManager->init();
 
-
+	mpHud = new HUD();
 
 	//Start Window
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
@@ -72,13 +69,13 @@ void Game::init(int width, int height, int fps)
 	InitWindow(width, height, "Idle Slots");
 
 	createSlotMachine();
-
+	mpHud->init(mWidth, mheight, mSlotMachine->getRec());
 	mInit = true;
 }
 
 void Game::createSlotMachine()
 {
-	Vector2 pos{ GetScreenWidth() * 0.4f , GetScreenHeight() * 0.4f };
+	Vector2 pos{ GetScreenWidth() * 0.05f , GetScreenHeight() * 0.05f };
 
 	const std::string KEY = "slotmachine";
 	const std::string ASSETS_FOLDER = R"(..\Assets\)";
@@ -102,6 +99,9 @@ void Game::pollInputs()
 {
 	if (IsKeyPressed(KEY_SPACE))
 		mSlotMachine->spin();
+
+	if (IsKeyPressed(KEY_ENTER))
+		mSlotMachine->showLines();
 }
 
 void Game::update()
@@ -117,16 +117,11 @@ void Game::update()
 
 void Game::draw()
 {
-	// Debug Box
-	Vector2 pos{ GetScreenWidth() * 0.4f , GetScreenHeight() * 0.4f };
-	int numReels = 3;
-	int lenght = 3;
-	int spriteCount = 4;
-	Vector2 spriteDimension{ 96, 96 };
-	Vector2 machineDimesion{ spriteDimension.x * numReels, spriteDimension.y * lenght };
-	DrawRectangle(pos.x, pos.y, machineDimesion.x, machineDimesion.y, BLUE);
-
-
+	BeginDrawing();
+	ClearBackground(RAYWHITE);
 
 	mSlotMachine->draw();
+	mpHud->draw(HUD::GAME_INFO);
+
+	EndDrawing();
 }

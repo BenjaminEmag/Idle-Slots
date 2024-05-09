@@ -1,7 +1,12 @@
 #include <vector>
 #include <raylib.h>
 #include <string>
-#include "SlotMachineState.h";
+#include "SlotMachineState.h"
+#include <map>
+#include <utility>
+#include "GraphicsObjectManager.h"
+#include "Reel.h"
+
 class GraphicsObjectManager;
 class GraphicsObject;
 class Reel;
@@ -18,6 +23,8 @@ public:
 	void setState(SlotMachineState state) { mState = state; };
 
 	void calculateSpinResult();
+	void showLines();
+	Rectangle getRec() { return mRectangle; };
 private:
 	Rectangle mRectangle; // Defines size of slot machine 
 	Vector2 mPos;
@@ -29,8 +36,13 @@ private:
 	int mLenght;
 	std::vector<Rectangle> mSlotSpriteRects; // defines the sprites 
 
-	float mSpinSpeed = 50.0f;
-	float mTotalSpinLenght = 1.5f;
+	// int is row count, vector2's describes end point and start point
+	std::unordered_map<int, std::pair<Vector2, Vector2>> mLines;
+	
+	float mSpinSpeed = 20.0f;
+	float mTotalSpinLenght = 5.0f;
 
-
+	bool mShowLines = false;
+	void insertLineFromRow(int row);
+	Rectangle getRectFromRow(int row);
 };

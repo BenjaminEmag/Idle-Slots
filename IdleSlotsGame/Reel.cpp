@@ -110,7 +110,7 @@ void Reel::spin()
 
 void Reel::setVisibleSymbols(Rectangle rects[])
 {
-	for (int i = 0; i < mLenght; i++)
+	for (int i = 0; i < mDrawLenght; i++)
 	{
 		mSlotSymbols[i].setSlotSymbol(rects[i]);
 	}
