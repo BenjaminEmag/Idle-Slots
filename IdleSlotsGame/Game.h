@@ -4,6 +4,7 @@
 class GraphicsObjectManager;
 class SlotMachine;
 class HUD;
+class InputSystem;
 
 class Game 
 {
@@ -14,7 +15,8 @@ private:
 
 	GraphicsObjectManager* mpGraphicsObjectManager = nullptr;
 	HUD* mpHud = nullptr;
-	SlotMachine* mSlotMachine = nullptr;
+	SlotMachine* mpSlotMachine = nullptr;
+	InputSystem* mpInputSystem = nullptr;
 
 	void pollInputs();
 	void update();

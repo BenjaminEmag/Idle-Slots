@@ -4,6 +4,8 @@
 #include "SlotSymbol.h"
 #include <iostream>
 #include <cstdlib>
+#include "ReelStopEvent.h"
+#include "EventSystem.h"
 
 Reel::Reel(Vector2 pos, std::vector<Sprite> sprites, int lenght, int reelDrawLenght, Rectangle slotMachine) : mPos(pos), mLenght(lenght), mDrawLenght(reelDrawLenght), mRectangle(slotMachine)
 {
@@ -66,7 +68,6 @@ void Reel::update()
 
 	for (int i = 0; i < mDrawLenght; i++)
 	{
-		//mSlotSymbols[i].setPosition(mSpriteLocation[i]);
 		mSlotSymbols[i].update();
 	}
 }
@@ -93,8 +94,11 @@ void Reel::spin()
 		delete mSpinTimer;
 		mSpinTimer = nullptr;
 		mTimerStarted = false;
-
+		
 		mState = SlotMachineState::STOP;
+
+		ReelStopEvent stopEvent;
+		EventSystem::getInstance()->fireEvent(stopEvent);
 	}
 
 	for (int i = 0; i < mDrawLenght; i++)

@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ClickGameEvent.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="EventListener.cpp" />
     <ClCompile Include="EventSystem.cpp" />
@@ -134,15 +135,18 @@
     <ClCompile Include="GraphicsObject.cpp" />
     <ClCompile Include="GraphicsObjectManager.cpp" />
     <ClCompile Include="HUD.cpp" />
+    <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Money.cpp" />
     <ClCompile Include="Reel.cpp" />
+    <ClCompile Include="ReelStopEvent.cpp" />
     <ClCompile Include="SlotMachine.cpp" />
     <ClCompile Include="SlotSymbol.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ClickGameEvent.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventListener.h" />
     <ClInclude Include="EventSystem.h" />
@@ -150,8 +154,10 @@
     <ClInclude Include="GraphicsObject.h" />
     <ClInclude Include="GraphicsObjectManager.h" />
     <ClInclude Include="HUD.h" />
+    <ClInclude Include="InputSystem.h" />
     <ClInclude Include="Money.h" />
     <ClInclude Include="Reel.h" />
+    <ClInclude Include="ReelStopEvent.h" />
     <ClInclude Include="SlotMachine.h" />
     <ClInclude Include="SlotMachineState.h" />
     <ClInclude Include="SlotSymbol.h" />

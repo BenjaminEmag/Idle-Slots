@@ -22,6 +22,7 @@ public:
 	void update();
 	void setPosition(Vector2 pos) { mPos = pos; }
 	Vector2 getPosition() { return mPos; };
+	SlotMachineState getState() { return mState; };
 private:
 	Vector2 mPos;
 	std::vector<SlotSymbol> mSlotSymbols;

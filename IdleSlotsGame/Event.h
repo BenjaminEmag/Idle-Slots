@@ -7,7 +7,9 @@ using namespace std;
 enum EventType
 {
 	INVALID_EVENT_TYPE = -1,
-	NUM_BASE_EVENT_TYPES
+	CLICK_GAME_EVENT,
+	REEL_STOP_EVENT,
+	NUM_EVENTS
 };
 
 class Event

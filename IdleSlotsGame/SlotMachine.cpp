@@ -6,6 +6,8 @@
 #include <string>
 #include <random>
 #include <iostream>
+#include "EventSystem.h"
+#include "ClickGameEvent.h"
 
 SlotMachine::SlotMachine(Vector2 position, int numReels, int length, GraphicsObjectManager* graphicsObjManager, const std::string key, Vector2 machinDim, Vector2 spriteDim, int spriteCount)
 	: mpGrapicObjManagers(graphicsObjManager), mPos(position), mNumReels(numReels), mLenght(length)
@@ -33,12 +35,17 @@ SlotMachine::SlotMachine(Vector2 position, int numReels, int length, GraphicsObj
 		reelPosition.x = reelPosition.x + machinDim.x / numReels;
 	}
 
+	EventSystem::getInstance()->addListener(static_cast<EventType>(CLICK_GAME_EVENT), this);
+	EventSystem::getInstance()->addListener(static_cast<EventType>(REEL_STOP_EVENT), this);
+
 	insertLineFromRow(1);
 	start();
 }
 
 void SlotMachine::start()
 {
+	mState = SlotMachineState::START;
+
 	Vector2 reelPosition = mPos;
 
 	float reelWidth = mRectangle.width / mNumReels;
@@ -51,6 +58,8 @@ void SlotMachine::start()
 
 void SlotMachine::spin()
 {
+	mState = SlotMachineState::SPIN;
+
 	float totalTime = mTotalSpinLenght;
 	float timeInterval = totalTime / mNumReels;
 	float spinTime = timeInterval;
@@ -65,10 +74,19 @@ void SlotMachine::spin()
 
 void SlotMachine::stopSpin()
 {
+	bool hasStop = true;
+	mState = SlotMachineState::STOP;
+
 	for (int i = 0; i < mNumReels; i++)
 	{
 		mReels[i].stop();
+
+		if (mReels[i].getState() != SlotMachineState::START)
+			hasStop = false;
 	}
+
+	if (hasStop)
+		mState = SlotMachineState::START;
 }
 
 void SlotMachine::draw()
@@ -91,6 +109,15 @@ void SlotMachine::draw()
 
 void SlotMachine::update()
 {
+	switch (mState)
+	{
+	case SlotMachineState::START:
+		break;
+	case SlotMachineState::STOP:
+		stopSpin();
+		break;
+	}
+
 	for (int i = 0; i < mNumReels; i++)
 	{
 		mReels[i].update();
@@ -137,4 +164,26 @@ Rectangle SlotMachine::getRectFromRow(int row)
 {
 	row++;
 	return Rectangle{ mRectangle.x , mRectangle.y + row * mSlotSpriteRects[0].height ,mSlotSpriteRects[0].width * mNumReels, mSlotSpriteRects[0].height };
+}
+
+void SlotMachine::handleEvent(const Event& theEvent)
+{
+	if (theEvent.getType() == CLICK_GAME_EVENT)
+	{
+		const ClickGameEvent& clickEvent = static_cast<const ClickGameEvent&>(theEvent);
+
+		if (CheckCollisionPointRec(clickEvent.mPos, mRectangle))
+			handleClick();
+	}
+
+	if (theEvent.getType() == REEL_STOP_EVENT)
+	{
+		mState = SlotMachineState::STOP;
+	}
+}
+
+void SlotMachine::handleClick()
+{
+	if (mState == SlotMachineState::START)
+		spin();
 }

@@ -7,6 +7,8 @@
 #include "Money.h"
 #include "SlotMachineState.h"
 #include <iostream>
+#include "EventSystem.h"
+#include "InputSystem.h"
 
 Game* Game::mpsInstance = nullptr;
 
@@ -39,6 +41,8 @@ void Game::cleanup()
 	mpGraphicsObjectManager->cleanup();
 	delete mpGraphicsObjectManager;
 
+	delete mpInputSystem;
+
 	mInit = false;
 }
 
@@ -63,13 +67,18 @@ void Game::init(int width, int height, int fps)
 
 	mpHud = new HUD();
 
+	EventSystem::createInstance();
+	EventSystem::getInstance()->init();
+
+	mpInputSystem = new InputSystem();
+
 	//Start Window
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 	SetTargetFPS(60);
 	InitWindow(width, height, "Idle Slots");
 
 	createSlotMachine();
-	mpHud->init(mWidth, mheight, mSlotMachine->getRec());
+	mpHud->init(mWidth, mheight, mpSlotMachine->getRec());
 	mInit = true;
 }
 
@@ -91,17 +100,13 @@ void Game::createSlotMachine()
 	mpGraphicsObjectManager->createAndManageGraphics(KEY, ASSETS_FOLDER + SLOT_FILENAME);
 
 
-	mSlotMachine = new SlotMachine(pos, numReels, lenght, mpGraphicsObjectManager, KEY, machineDimesion, spriteDimension, spriteCount);
+	mpSlotMachine = new SlotMachine(pos, numReels, lenght, mpGraphicsObjectManager, KEY, machineDimesion, spriteDimension, spriteCount);
 
 }
 
 void Game::pollInputs()
 {
-	if (IsKeyPressed(KEY_SPACE))
-		mSlotMachine->spin();
-
-	if (IsKeyPressed(KEY_ENTER))
-		mSlotMachine->showLines();
+	mpInputSystem->update();
 }
 
 void Game::update()
@@ -110,7 +115,7 @@ void Game::update()
 
 	if (mUpdateTimer.isTimerDone()) 
 	{
-		mSlotMachine->update();
+		mpSlotMachine->update();
 		mUpdateTimer.startTimer(mUpdateInterval);
 	}
 }
@@ -120,7 +125,7 @@ void Game::draw()
 	BeginDrawing();
 	ClearBackground(RAYWHITE);
 
-	mSlotMachine->draw();
+	mpSlotMachine->draw();
 	mpHud->draw(HUD::GAME_INFO);
 
 	EndDrawing();

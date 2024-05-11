@@ -6,12 +6,13 @@
 #include <utility>
 #include "GraphicsObjectManager.h"
 #include "Reel.h"
+#include "EventListener.h"
 
 class GraphicsObjectManager;
 class GraphicsObject;
 class Reel;
 
-class SlotMachine
+class SlotMachine : EventListener
 {
 public:
 	SlotMachine(Vector2 position, int numReels, int lenght, GraphicsObjectManager* graphicsObjManager, const std::string key, Vector2 machinDim, Vector2 spriteDim, int spriteCount);
@@ -45,4 +46,7 @@ private:
 	bool mShowLines = false;
 	void insertLineFromRow(int row);
 	Rectangle getRectFromRow(int row);
+	void handleEvent(const Event& theEvent);
+
+	void handleClick();
 };

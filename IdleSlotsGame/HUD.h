@@ -17,6 +17,8 @@ public:
 
 	void init(int width, int height, Rectangle slotmRect);
 	void draw(const DrawType& type);
+
+	Money* getMoney() { return mpMoney; };
 private:
 	int mWidth = 0;
 	int mHeight = 0;
